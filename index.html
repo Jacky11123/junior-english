@@ -333,10 +333,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
             <div class="card-category" id="cb-cat"></div>
             <div class="card-zh" id="cb-zh"></div>
             <div class="card-example" id="cb-ex"></div>
-            <button class="speak-btn" id="speak-btn">🔊 發音</button>
           </div>
         </div>
       </div>
+    </div>
+    <div id="speak-row" style="display:none;justify-content:center;padding:0 16px 4px">
+      <button class="speak-btn" id="speak-btn">🔊 發音</button>
     </div>
     <div class="rating-row" id="rating-row" style="display:none">
       <button class="rating-btn again" onclick="rate('again')">再看看<sub>幾分鐘後</sub></button>
@@ -655,6 +657,7 @@ function showCard(){
   document.getElementById('cb-cat').textContent=currentWord.emoji+' '+currentWord.category;
   document.getElementById('cb-ex').textContent=currentWord.example||'';
   document.getElementById('rating-row').style.display='none';
+  document.getElementById('speak-row').style.display='none';
   // progress bar
   const pct=Math.round(poolIdx/pool.length*100);
   document.getElementById('session-bar').style.width=pct+'%';
@@ -666,6 +669,7 @@ function flipCard(){
   flipped=true;
   document.getElementById('the-card').classList.add('flipped');
   document.getElementById('rating-row').style.display='flex';
+  document.getElementById('speak-row').style.display='flex';
 }
 
 function speakWord(){
