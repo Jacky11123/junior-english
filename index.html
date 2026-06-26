@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="國中英語">
+<meta name="theme-color" content="#1a1a2e">
+<title>國中英語單字</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0f1a;
+  --surface:#1a1a2e;
+  --surface2:#16213e;
+  --card:#1e2a45;
+  --card2:#22304f;
+  --accent:#4f8ef7;
+  --accent2:#7b5ea7;
+  --accent3:#e05a7a;
+  --text:#e8ecf4;
+  --text2:#9ba8c0;
+  --text3:#5c6a82;
+  --green:#3dd68c;
+  --yellow:#f5c542;
+  --red:#e05a7a;
+  --orange:#f0874a;
+  --nav-h:64px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;position:relative}
+
+/* ── NAV ── */
+#nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  height:calc(var(--nav-h) + var(--safe-bottom));
+  background:var(--surface);
+  border-top:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:flex-start;padding-top:8px;
+  padding-bottom:var(--safe-bottom);
+  z-index:100;
+}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0;border:none;background:none;color:var(--text3);font-size:10px;transition:color .2s}
+.nav-btn.active{color:var(--accent)}
+.nav-btn svg{width:22px;height:22px}
+
+/* ── SCREENS ── */
+.screen{
+  flex:1;overflow-y:auto;
+  padding:16px 16px calc(var(--nav-h) + var(--safe-bottom) + 16px);
+  display:none;
+}
+.screen.active{display:block}
+
+/* ── HOME ── */
+.home-header{padding:20px 0 8px;text-align:center}
+.home-header h1{font-size:22px;font-weight:700;letter-spacing:-.5px}
+.home-header p{color:var(--text2);font-size:13px;margin-top:4px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.stat-card{background:var(--card);border-radius:14px;padding:16px;text-align:center}
+.stat-num{font-size:28px;font-weight:700;color:var(--accent)}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+.mission-card{background:linear-gradient(135deg,var(--surface2),var(--card));border-radius:16px;padding:18px;margin:8px 0;border:1px solid rgba(79,142,247,.2)}
+.mission-title{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.mission-bar-bg{background:rgba(255,255,255,.08);border-radius:99px;height:8px;overflow:hidden}
+.mission-bar{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:width .5s}
+.mission-info{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-top:8px}
+.grade-pill{display:inline-flex;gap:6px;background:var(--surface);border-radius:99px;padding:4px;margin:12px 0}
+.grade-pill button{border:none;background:none;color:var(--text2);font-size:13px;padding:6px 14px;border-radius:99px;cursor:pointer;transition:.2s}
+.grade-pill button.active{background:var(--accent);color:#fff}
+.section-title{font-size:13px;color:var(--text2);font-weight:600;margin:16px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.recent-word{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.rw-word{font-size:16px;font-weight:600;flex:1}
+.rw-zh{font-size:13px;color:var(--text2)}
+.rw-badge{font-size:11px;padding:3px 8px;border-radius:99px;font-weight:600}
+.badge-new{background:rgba(79,142,247,.2);color:var(--accent)}
+.badge-review{background:rgba(61,214,140,.2);color:var(--green)}
+.badge-hard{background:rgba(224,90,122,.2);color:var(--red)}
+
+/* ── FLASHCARD MENU / SESSION ── */
+#fc-menu{padding:16px;display:flex;flex-direction:column;gap:14px}
+.fc-menu-title{font-size:20px;font-weight:700;padding:8px 0}
+.grade-select-row{display:flex;gap:8px;flex-wrap:wrap}
+.grade-btn{border:1.5px solid var(--text3);background:none;color:var(--text2);border-radius:10px;padding:8px 16px;font-size:14px;cursor:pointer;transition:.2s;font-weight:600}
+.grade-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.12)}
+.mode-list{display:flex;flex-direction:column;gap:8px}
+.mode-btn{border:1.5px solid rgba(255,255,255,.08);background:var(--card);border-radius:12px;padding:14px 16px;text-align:left;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:12px}
+.mode-btn:hover,.mode-btn.active{border-color:var(--accent);background:rgba(79,142,247,.1)}
+.mode-icon{font-size:22px;width:32px;text-align:center}
+.mode-text{flex:1}
+.mode-name{font-size:15px;font-weight:600;color:var(--text)}
+.mode-desc{font-size:12px;color:var(--text2);margin-top:2px}
+.start-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;letter-spacing:.3px}
+.start-btn:disabled{opacity:.4;cursor:not-allowed}
+
+#fc-session{display:none;flex-direction:column;height:100%;padding-bottom:calc(var(--nav-h) + var(--safe-bottom))}
+.session-top{padding:12px 16px 0;display:flex;align-items:center;gap:10px}
+.session-back{background:none;border:none;color:var(--text2);cursor:pointer;font-size:22px;padding:4px}
+.session-progress{flex:1;background:rgba(255,255,255,.08);border-radius:99px;height:6px;overflow:hidden}
+.session-bar{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:99px;transition:width .4s}
+.session-count{font-size:13px;color:var(--text2);white-space:nowrap}
+
+.card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:16px;perspective:1000px}
+.card-wrap{width:100%;max-width:340px}
+.card{
+  background:var(--card);border-radius:20px;
+  min-height:260px;padding:28px 24px;
+  cursor:pointer;
+  transform-style:preserve-3d;
+  transition:transform .45s cubic-bezier(.4,0,.2,1);
+  position:relative;user-select:none;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.card.flipped{transform:rotateY(180deg)}
+.card-front,.card-back{
+  position:absolute;inset:0;padding:28px 24px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-radius:20px;
+}
+.card-back{transform:rotateY(180deg);background:var(--card2)}
+.card-tag{font-size:11px;color:var(--text3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.card-word{font-size:38px;font-weight:800;letter-spacing:-1px;text-align:center;line-height:1.1}
+.card-phonetic{font-size:14px;color:var(--text2);margin-top:8px}
+.card-hint{font-size:13px;color:var(--text3);margin-top:20px}
+.card-zh{font-size:30px;font-weight:700;text-align:center;color:var(--text)}
+.card-category{font-size:12px;color:var(--accent);margin-top:6px}
+.card-example{font-size:13px;color:var(--text2);text-align:center;margin-top:14px;line-height:1.6;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:10px;width:100%}
+.speak-btn{margin-top:16px;background:rgba(79,142,247,.15);border:1px solid rgba(79,142,247,.3);color:var(--accent);border-radius:99px;padding:8px 20px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+
+.rating-row{padding:14px 16px;display:flex;gap:10px}
+.rating-btn{flex:1;border:none;border-radius:12px;padding:14px 6px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s;line-height:1.3}
+.rating-btn.again{background:rgba(224,90,122,.2);color:var(--red)}
+.rating-btn.hard{background:rgba(240,135,74,.2);color:var(--orange)}
+.rating-btn.good{background:rgba(79,142,247,.2);color:var(--accent)}
+.rating-btn.easy{background:rgba(61,214,140,.2);color:var(--green)}
+.rating-btn sub{display:block;font-size:10px;font-weight:400;opacity:.8}
+
+.session-done{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:32px;gap:16px;text-align:center}
+.done-emoji{font-size:64px}
+.done-title{font-size:24px;font-weight:700}
+.done-sub{color:var(--text2);font-size:14px;line-height:1.6}
+.done-btn{background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+
+/* ── MATCHING ── */
+.match-header{padding:16px 16px 8px;display:flex;align-items:center;gap:10px}
+.match-header h2{flex:1;font-size:18px;font-weight:700}
+.match-timer{font-size:14px;color:var(--text2);font-variant-numeric:tabular-nums}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.match-cell{
+  background:var(--card);border:1.5px solid transparent;border-radius:14px;
+  padding:14px 10px;text-align:center;cursor:pointer;
+  font-size:15px;font-weight:600;min-height:70px;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;word-break:break-word;line-height:1.3;
+}
+.match-cell.selected{border-color:var(--accent);background:rgba(79,142,247,.15)}
+.match-cell.matched{border-color:var(--green);background:rgba(61,214,140,.12);color:var(--green);cursor:default}
+.match-cell.wrong{border-color:var(--red);background:rgba(224,90,122,.15);animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.streak-bar{text-align:center;padding:8px 16px;font-size:13px;color:var(--yellow);font-weight:600;min-height:28px}
+.match-start{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;gap:16px;text-align:center}
+.match-start h2{font-size:22px;font-weight:700}
+.match-start p{color:var(--text2);font-size:14px;line-height:1.6}
+
+/* ── PROGRESS ── */
+.progress-header{padding:20px 0 8px}
+.progress-header h2{font-size:20px;font-weight:700}
+.prog-grade-row{display:flex;gap:8px;margin:12px 0;overflow-x:auto;padding-bottom:4px}
+.prog-grade-btn{border:1.5px solid var(--text3);background:none;color:var(--text2);border-radius:99px;padding:6px 16px;font-size:13px;cursor:pointer;white-space:nowrap;transition:.2s;font-weight:600}
+.prog-grade-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.12)}
+.prog-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.prog-stat{background:var(--card);border-radius:12px;padding:12px;text-align:center}
+.prog-num{font-size:22px;font-weight:700}
+.prog-lbl{font-size:10px;color:var(--text2);margin-top:2px}
+.word-list{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.word-item{background:var(--card);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.wi-word{font-size:14px;font-weight:600;flex:1}
+.wi-zh{font-size:12px;color:var(--text2);margin-top:1px}
+.wi-badge{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:700;white-space:nowrap}
+.wi-interval{font-size:10px;color:var(--text3);margin-left:4px}
+.filter-row{display:flex;gap:6px;margin:8px 0;overflow-x:auto;padding-bottom:4px}
+.filter-btn{border:1px solid var(--text3);background:none;color:var(--text2);border-radius:99px;padding:5px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s}
+.filter-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(79,142,247,.1)}
+.export-row{display:flex;gap:8px;margin:16px 0}
+.export-btn{flex:1;background:var(--card);border:1px solid rgba(255,255,255,.1);color:var(--text2);border-radius:10px;padding:10px;font-size:13px;cursor:pointer;font-weight:600}
+
+/* ── SETTINGS ── */
+#settings-drawer{
+  position:fixed;inset:0;z-index:200;
+  display:none;
+}
+#settings-drawer.open{display:flex;flex-direction:column;justify-content:flex-end}
+.drawer-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.drawer-panel{
+  position:relative;background:var(--surface);border-radius:24px 24px 0 0;
+  padding:20px 20px calc(var(--safe-bottom) + 20px);
+  max-height:80vh;overflow-y:auto;
+}
+.drawer-handle{width:40px;height:4px;background:rgba(255,255,255,.2);border-radius:99px;margin:0 auto 20px}
+.drawer-title{font-size:18px;font-weight:700;margin-bottom:16px}
+.setting-row{margin-bottom:16px}
+.setting-label{font-size:13px;color:var(--text2);margin-bottom:8px;display:block}
+.setting-select{
+  width:100%;background:var(--card);border:1px solid rgba(255,255,255,.1);
+  color:var(--text);border-radius:10px;padding:10px 12px;font-size:14px;
+  -webkit-appearance:none;appearance:none;
+}
+.setting-apply{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+#settings-gear{
+  position:fixed;top:16px;right:16px;
+  background:var(--surface);border:1px solid rgba(255,255,255,.1);
+  border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:50;
+}
+
+/* ── INSTALL GUIDE ── */
+#install-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+}
+.install-panel{
+  background:var(--surface);border-radius:24px 24px 0 0;
+  padding:24px 20px calc(var(--safe-bottom) + 20px);width:100%;max-width:430px;
+}
+.install-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:16px}
+.install-tab-row{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px}
+.install-tab{flex:1;border:none;background:none;color:var(--text2);padding:8px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;transition:.2s}
+.install-tab.active{background:var(--card);color:var(--text)}
+.install-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.install-step-num{width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.install-step p{font-size:14px;color:var(--text2);line-height:1.5}
+.install-step strong{color:var(--text)}
+.install-btns{display:flex;gap:10px;margin-top:16px}
+.install-done{flex:2;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer}
+.install-skip{flex:1;background:var(--card);color:var(--text2);border:none;border-radius:12px;padding:14px;font-size:14px;cursor:pointer}
+
+.empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty-state p{margin-top:8px;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- SETTINGS GEAR -->
+<div id="settings-gear" onclick="openSettings()">
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+  </svg>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="home-header">
+    <h1>🏫 國中英語單字</h1>
+    <p id="home-date"></p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="stat-learned">0</div><div class="stat-label">已學單字</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-today">0</div><div class="stat-label">今日完成</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-streak">0</div><div class="stat-label">連續天數🔥</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-due">0</div><div class="stat-label">待複習</div></div>
+  </div>
+  <div class="mission-card">
+    <div class="mission-title">📋 今日任務</div>
+    <div class="mission-bar-bg"><div class="mission-bar" id="mission-bar" style="width:0%"></div></div>
+    <div class="mission-info"><span id="mission-done">0 / 0</span><span id="mission-pct">0%</span></div>
+  </div>
+  <div class="section-title">最近學習</div>
+  <div id="recent-list"></div>
+</div>
+
+<!-- FLASHCARD -->
+<div class="screen" id="screen-flash">
+  <div id="fc-menu">
+    <div class="fc-menu-title">🃏 閃卡練習</div>
+    <div>
+      <div class="section-title">年級範圍</div>
+      <div class="grade-select-row">
+        <button class="grade-btn" data-g="7">7年級</button>
+        <button class="grade-btn" data-g="8">8年級</button>
+        <button class="grade-btn" data-g="9">9年級</button>
+      </div>
+    </div>
+    <div>
+      <div class="section-title">練習方式</div>
+      <div class="mode-list">
+        <button class="mode-btn" data-m="free">
+          <span class="mode-icon">🔀</span>
+          <span class="mode-text"><span class="mode-name">自由練習</span><span class="mode-desc">新字＋複習混合</span></span>
+        </button>
+        <button class="mode-btn" data-m="new">
+          <span class="mode-icon">🌱</span>
+          <span class="mode-text"><span class="mode-name">只練新字</span><span class="mode-desc">尚未學過的單字</span></span>
+        </button>
+        <button class="mode-btn" data-m="mission">
+          <span class="mode-icon">🎯</span>
+          <span class="mode-text"><span class="mode-name">今日任務</span><span class="mode-desc">依每日新字上限</span></span>
+        </button>
+        <button class="mode-btn" data-m="weak">
+          <span class="mode-icon">⚠️</span>
+          <span class="mode-text"><span class="mode-name">弱點加強</span><span class="mode-desc">評為「困難」的字</span></span>
+        </button>
+        <button class="mode-btn" data-m="review">
+          <span class="mode-icon">📖</span>
+          <span class="mode-text"><span class="mode-name">複習已學</span><span class="mode-desc">到期或即將到期</span></span>
+        </button>
+      </div>
+    </div>
+    <button class="start-btn" id="start-btn" disabled>選好年級和練習方式再開始</button>
+  </div>
+
+  <div id="fc-session">
+    <div class="session-top">
+      <button class="session-back" id="session-back">✕</button>
+      <div class="session-progress"><div class="session-bar" id="session-bar" style="width:0%"></div></div>
+      <span class="session-count" id="session-count"></span>
+    </div>
+    <div class="card-area" id="card-area">
+      <div class="card-wrap">
+        <div class="card" id="the-card">
+          <div class="card-front">
+            <div class="card-tag" id="cf-tag"></div>
+            <div class="card-word" id="cf-word"></div>
+            <div class="card-phonetic" id="cf-phonetic"></div>
+            <div class="card-hint">點擊翻面</div>
+          </div>
+          <div class="card-back">
+            <div class="card-category" id="cb-cat"></div>
+            <div class="card-zh" id="cb-zh"></div>
+            <div class="card-example" id="cb-ex"></div>
+            <button class="speak-btn" id="speak-btn">🔊 發音</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rating-row" id="rating-row" style="display:none">
+      <button class="rating-btn again" onclick="rate('again')">再看看<sub>幾分鐘後</sub></button>
+      <button class="rating-btn hard" onclick="rate('hard')">有點難<sub>1天後</sub></button>
+      <button class="rating-btn good" onclick="rate('good')">記得了<sub>3天後</sub></button>
+      <button class="rating-btn easy" onclick="rate('easy')">太簡單<sub>7天後</sub></button>
+    </div>
+    <div class="session-done" id="session-done" style="display:none">
+      <div class="done-emoji">🎉</div>
+      <div class="done-title">這輪完成！</div>
+      <div class="done-sub" id="done-sub"></div>
+      <button class="done-btn" onclick="backToMenu()">選其他練習</button>
+    </div>
+  </div>
+</div>
+
+<!-- MATCHING -->
+<div class="screen" id="screen-match">
+  <div class="match-header">
+    <h2>⚡ 配對挑戰</h2>
+    <div class="match-timer" id="match-timer">00:00</div>
+  </div>
+  <div class="streak-bar" id="streak-bar"></div>
+  <div class="match-grid" id="match-grid"></div>
+  <div id="match-start-panel" class="match-start">
+    <h2>⚡ 配對挑戰</h2>
+    <p>選出年級，將英文和中文配對。連續答對會有獎勵！</p>
+    <div class="grade-select-row" id="match-grade-row" style="justify-content:center">
+      <button class="grade-btn" data-mg="7">7年級</button>
+      <button class="grade-btn" data-mg="8">8年級</button>
+      <button class="grade-btn" data-mg="9">9年級</button>
+      <button class="grade-btn" data-mg="all">全部</button>
+    </div>
+    <button class="start-btn" id="match-start-btn" style="width:100%" disabled>選好年級開始</button>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="screen" id="screen-prog">
+  <div class="progress-header"><h2>📊 學習紀錄</h2></div>
+  <div class="prog-grade-row">
+    <button class="prog-grade-btn active" data-pg="all">全部</button>
+    <button class="prog-grade-btn" data-pg="7">7年級</button>
+    <button class="prog-grade-btn" data-pg="8">8年級</button>
+    <button class="prog-grade-btn" data-pg="9">9年級</button>
+  </div>
+  <div class="prog-summary">
+    <div class="prog-stat"><div class="prog-num" id="ps-learned">0</div><div class="prog-lbl">已學</div></div>
+    <div class="prog-stat"><div class="prog-num" id="ps-due">0</div><div class="prog-lbl">待複習</div></div>
+    <div class="prog-stat"><div class="prog-num" id="ps-new">0</div><div class="prog-lbl">未學</div></div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" data-f="all">全部</button>
+    <button class="filter-btn" data-f="learned">已學</button>
+    <button class="filter-btn" data-f="due">待複習</button>
+    <button class="filter-btn" data-f="new">未學</button>
+    <button class="filter-btn" data-f="hard">困難</button>
+  </div>
+  <div class="word-list" id="word-list"></div>
+  <div class="export-row">
+    <button class="export-btn" onclick="exportData()">📤 匯出進度</button>
+    <button class="export-btn" onclick="document.getElementById('import-file').click()">📥 匯入進度</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>首頁
+  </button>
+  <button class="nav-btn" data-tab="flash" onclick="switchTab('flash')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>閃卡
+  </button>
+  <button class="nav-btn" data-tab="match" onclick="switchTab('match')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>配對
+  </button>
+  <button class="nav-btn" data-tab="prog" onclick="switchTab('prog')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>紀錄
+  </button>
+</nav>
+
+</div>
+
+<!-- SETTINGS DRAWER -->
+<div id="settings-drawer">
+  <div class="drawer-overlay" onclick="closeSettings()"></div>
+  <div class="drawer-panel">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">⚙️ 設定</div>
+    <div class="setting-row">
+      <label class="setting-label">每日新字上限</label>
+      <select class="setting-select" id="set-daily">
+        <option value="5">5 個</option>
+        <option value="10" selected>10 個</option>
+        <option value="15">15 個</option>
+        <option value="20">20 個</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label class="setting-label">每輪題數</label>
+      <select class="setting-select" id="set-round">
+        <option value="5">5 題</option>
+        <option value="10" selected>10 題</option>
+        <option value="15">15 題</option>
+        <option value="20">20 題</option>
+      </select>
+    </div>
+    <button class="setting-apply" onclick="applySettings()">✅ 確認套用</button>
+  </div>
+</div>
+
+<!-- INSTALL OVERLAY -->
+<div id="install-overlay">
+  <div class="install-panel">
+    <div class="install-title">📲 加入主畫面，離線使用</div>
+    <div class="install-tab-row">
+      <button class="install-tab active" onclick="setInstallTab('ios')">🍎 iPhone/iPad</button>
+      <button class="install-tab" onclick="setInstallTab('android')">🤖 Android</button>
+    </div>
+    <div id="install-ios">
+      <div class="install-step"><div class="install-step-num">1</div><p>用 <strong>Safari</strong> 開啟本頁（Chrome 無法安裝）</p></div>
+      <div class="install-step"><div class="install-step-num">2</div><p>點下方工具列的 <strong>分享按鈕</strong>（⬆️ 方塊加箭頭）</p></div>
+      <div class="install-step"><div class="install-step-num">3</div><p>往下滑找 <strong>「加入主畫面」</strong>，按右上角「新增」</p></div>
+    </div>
+    <div id="install-android" style="display:none">
+      <div class="install-step"><div class="install-step-num">1</div><p>用 <strong>Chrome</strong> 開啟本頁</p></div>
+      <div class="install-step"><div class="install-step-num">2</div><p>點右上角 <strong>三個點選單</strong></p></div>
+      <div class="install-step"><div class="install-step-num">3</div><p>選 <strong>「新增至主畫面」</strong> 或 <strong>「安裝應用程式」</strong></p></div>
+    </div>
+    <div class="install-btns">
+      <button class="install-done" id="install-done">✅ 已安裝好</button>
+      <button class="install-skip" id="install-skip">先跳過</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const WORDS = [{"id":1,"word":"dog","zh":"狗","category":"動物","emoji":"🐶","example":"The dog is sleeping.","grade":7},{"id":2,"word":"cat","zh":"貓","category":"動物","emoji":"🐶","example":"I have a cute cat.","grade":7},{"id":3,"word":"bird","zh":"鳥","category":"動物","emoji":"🐶","example":"The bird is flying.","grade":7},{"id":4,"word":"fish","zh":"魚","category":"動物","emoji":"🐶","example":"There is a fish in the water.","grade":7},{"id":5,"word":"pig","zh":"豬","category":"動物","emoji":"🐶","example":"The pig is eating.","grade":7},{"id":6,"word":"cow","zh":"牛","category":"動物","emoji":"🐶","example":"The cow gives us milk.","grade":7},{"id":7,"word":"monkey","zh":"猴子","category":"動物","emoji":"🐶","example":"The monkey likes bananas.","grade":7},{"id":8,"word":"tiger","zh":"老虎","category":"動物","emoji":"🐶","example":"A tiger is a big animal.","grade":7},{"id":9,"word":"lion","zh":"獅子","category":"動物","emoji":"🐶","example":"The lion is the king of animals.","grade":7},{"id":10,"word":"bear","zh":"熊","category":"動物","emoji":"🐶","example":"I saw a big brown bear.","grade":7},{"id":11,"word":"red","zh":"紅色","category":"顏色","emoji":"🎨","example":"Apples are usually red.","grade":7},{"id":12,"word":"blue","zh":"藍色","category":"顏色","emoji":"🎨","example":"The sky is blue today.","grade":7},{"id":13,"word":"green","zh":"綠色","category":"顏色","emoji":"🎨","example":"The grass is green.","grade":7},{"id":14,"word":"yellow","zh":"黃色","category":"顏色","emoji":"🎨","example":"Bananas are yellow.","grade":7},{"id":15,"word":"black","zh":"黑色","category":"顏色","emoji":"🎨","example":"He wears a black hat.","grade":7},{"id":16,"word":"white","zh":"白色","category":"顏色","emoji":"🎨","example":"Snow is white.","grade":7},{"id":17,"word":"pink","zh":"粉紅色","category":"顏色","emoji":"🎨","example":"She likes pink dresses.","grade":7},{"id":18,"word":"purple","zh":"紫色","category":"顏色","emoji":"🎨","example":"Grapes are purple.","grade":7},{"id":19,"word":"gray","zh":"灰色","category":"顏色","emoji":"🎨","example":"The cat is gray.","grade":7},{"id":20,"word":"brown","zh":"棕色","category":"顏色","emoji":"🎨","example":"The desk is brown.","grade":7},{"id":21,"word":"one","zh":"一","category":"數字","emoji":"🔢","example":"I have one brother.","grade":7},{"id":22,"word":"two","zh":"二","category":"數字","emoji":"🔢","example":"She has two cats.","grade":7},{"id":23,"word":"three","zh":"三","category":"數字","emoji":"🔢","example":"There are three birds.","grade":7},{"id":24,"word":"four","zh":"四","category":"數字","emoji":"🔢","example":"A car has four wheels.","grade":7},{"id":25,"word":"five","zh":"五","category":"數字","emoji":"🔢","example":"I have five books.","grade":7},{"id":26,"word":"six","zh":"六","category":"數字","emoji":"🔢","example":"He is six years old.","grade":7},{"id":27,"word":"seven","zh":"七","category":"數字","emoji":"🔢","example":"A week has seven days.","grade":7},{"id":28,"word":"eight","zh":"八","category":"數字","emoji":"🔢","example":"I wake up at eight.","grade":7},{"id":29,"word":"nine","zh":"九","category":"數字","emoji":"🔢","example":"There are nine students.","grade":7},{"id":30,"word":"ten","zh":"十","category":"數字","emoji":"🔢","example":"She bought ten apples.","grade":7},{"id":31,"word":"father","zh":"父親","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My father is a teacher.","grade":7},{"id":32,"word":"mother","zh":"母親","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My mother loves cooking.","grade":7},{"id":33,"word":"brother","zh":"兄弟","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"I play with my brother.","grade":7},{"id":34,"word":"sister","zh":"姊妹","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My sister is a student.","grade":7},{"id":35,"word":"grandfather","zh":"祖父","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My grandfather is old.","grade":7},{"id":36,"word":"grandmother","zh":"祖母","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My grandmother makes good tea.","grade":7},{"id":37,"word":"uncle","zh":"叔伯","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My uncle lives in Taipei.","grade":7},{"id":38,"word":"aunt","zh":"阿姨","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"My aunt is very kind.","grade":7},{"id":39,"word":"cousin","zh":"表堂哥弟姊妹","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"I visit my cousin on weekends.","grade":7},{"id":40,"word":"son","zh":"兒子","category":"家庭","emoji":"👨‍👩‍👧‍👦","example":"He has one son.","grade":7},{"id":41,"word":"head","zh":"頭","category":"身體部位","emoji":"👁️","example":"My head hurts.","grade":7},{"id":42,"word":"hair","zh":"頭髮","category":"身體部位","emoji":"👁️","example":"She has long hair.","grade":7},{"id":43,"word":"eye","zh":"眼睛","category":"身體部位","emoji":"👁️","example":"Close your eyes.","grade":7},{"id":44,"word":"ear","zh":"耳朵","category":"身體部位","emoji":"👁️","example":"I hear with my ears.","grade":7},{"id":45,"word":"nose","zh":"鼻子","category":"身體部位","emoji":"👁️","example":"My nose is cold.","grade":7},{"id":46,"word":"mouth","zh":"嘴巴","category":"身體部位","emoji":"👁️","example":"Open your mouth.","grade":7},{"id":47,"word":"face","zh":"臉","category":"身體部位","emoji":"👁️","example":"Wash your face.","grade":7},{"id":48,"word":"hand","zh":"手","category":"身體部位","emoji":"👁️","example":"Wash your hands before eating.","grade":7},{"id":49,"word":"arm","zh":"手臂","category":"身體部位","emoji":"👁️","example":"My arm is strong.","grade":7},{"id":50,"word":"leg","zh":"腿","category":"身體部位","emoji":"👁️","example":"He has long legs.","grade":7},{"id":51,"word":"pen","zh":"筆","category":"學習用品","emoji":"🏫","example":"Can I borrow your pen?","grade":7},{"id":52,"word":"pencil","zh":"鉛筆","category":"學習用品","emoji":"🏫","example":"I write with a pencil.","grade":7},{"id":53,"word":"eraser","zh":"橡皮擦","category":"學習用品","emoji":"🏫","example":"I need an eraser.","grade":7},{"id":54,"word":"ruler","zh":"尺","category":"學習用品","emoji":"🏫","example":"Use a ruler to draw a line.","grade":7},{"id":55,"word":"desk","zh":"書桌","category":"學習用品","emoji":"🏫","example":"Put the book on the desk.","grade":7},{"id":56,"word":"chair","zh":"椅子","category":"學習用品","emoji":"🏫","example":"Sit on the chair.","grade":7},{"id":57,"word":"book","zh":"書","category":"學習用品","emoji":"🏫","example":"I read a book every day.","grade":7},{"id":58,"word":"bag","zh":"書包","category":"學習用品","emoji":"🏫","example":"My bag is heavy.","grade":7},{"id":59,"word":"teacher","zh":"老師","category":"學習用品","emoji":"🏫","example":"Our teacher is nice.","grade":7},{"id":60,"word":"student","zh":"學生","category":"學習用品","emoji":"🏫","example":"I am a good student.","grade":7},{"id":61,"word":"apple","zh":"蘋果","category":"食物","emoji":"🍔","example":"I eat an apple.","grade":7},{"id":62,"word":"banana","zh":"香蕉","category":"食物","emoji":"🍔","example":"Monkeys like bananas.","grade":7},{"id":63,"word":"orange","zh":"橘子","category":"食物","emoji":"🍔","example":"I drink orange juice.","grade":7},{"id":64,"word":"water","zh":"水","category":"食物","emoji":"🍔","example":"Drink some water.","grade":7},{"id":65,"word":"milk","zh":"牛奶","category":"食物","emoji":"🍔","example":"Milk is good for you.","grade":7},{"id":66,"word":"tea","zh":"茶","category":"食物","emoji":"🍔","example":"Would you like some tea?","grade":7},{"id":67,"word":"rice","zh":"米飯","category":"食物","emoji":"🍔","example":"We eat rice for dinner.","grade":7},{"id":68,"word":"bread","zh":"麵包","category":"食物","emoji":"🍔","example":"I want some bread.","grade":7},{"id":69,"word":"egg","zh":"蛋","category":"食物","emoji":"🍔","example":"I eat an egg for breakfast.","grade":7},{"id":70,"word":"cake","zh":"蛋糕","category":"食物","emoji":"🍔","example":"This cake is sweet.","grade":7},{"id":71,"word":"shirt","zh":"襯衫","category":"服裝","emoji":"👕","example":"His shirt is blue.","grade":7},{"id":72,"word":"T-shirt","zh":"T恤","category":"服裝","emoji":"👕","example":"I wear a T-shirt in summer.","grade":7},{"id":73,"word":"pants","zh":"長褲","category":"服裝","emoji":"👕","example":"These pants are too long.","grade":7},{"id":74,"word":"skirt","zh":"裙子","category":"服裝","emoji":"👕","example":"She wears a red skirt.","grade":7},{"id":75,"word":"dress","zh":"洋裝","category":"服裝","emoji":"👕","example":"The dress is beautiful.","grade":7},{"id":76,"word":"coat","zh":"外套","category":"服裝","emoji":"👕","example":"Put on your coat.","grade":7},{"id":77,"word":"jacket","zh":"夾克","category":"服裝","emoji":"👕","example":"I need a warm jacket.","grade":7},{"id":78,"word":"shoe","zh":"鞋子","category":"服裝","emoji":"👕","example":"My left shoe is lost.","grade":7},{"id":79,"word":"sock","zh":"襪子","category":"服裝","emoji":"👕","example":"I wear clean socks.","grade":7},{"id":80,"word":"hat","zh":"帽子","category":"服裝","emoji":"👕","example":"He wears a hat in the sun.","grade":7},{"id":81,"word":"sun","zh":"太陽","category":"大自然","emoji":"🌳","example":"The sun is shining.","grade":7},{"id":82,"word":"moon","zh":"月亮","category":"大自然","emoji":"🌳","example":"The moon is bright tonight.","grade":7},{"id":83,"word":"star","zh":"星星","category":"大自然","emoji":"🌳","example":"I see stars in the sky.","grade":7},{"id":84,"word":"sky","zh":"天空","category":"大自然","emoji":"🌳","example":"The sky is blue.","grade":7},{"id":85,"word":"tree","zh":"樹","category":"大自然","emoji":"🌳","example":"There is a big tree.","grade":7},{"id":86,"word":"flower","zh":"花","category":"大自然","emoji":"🌳","example":"The flower smells good.","grade":7},{"id":87,"word":"grass","zh":"草","category":"大自然","emoji":"🌳","example":"Don't step on the grass.","grade":7},{"id":88,"word":"wind","zh":"風","category":"大自然","emoji":"🌳","example":"The wind is blowing.","grade":7},{"id":89,"word":"fire","zh":"火","category":"大自然","emoji":"🌳","example":"Fire is hot.","grade":7},{"id":90,"word":"sea","zh":"海","category":"大自然","emoji":"🌳","example":"I like to swim in the sea.","grade":7},{"id":91,"word":"go","zh":"去","category":"基本動作","emoji":"🏃","example":"Let's go home.","grade":7},{"id":92,"word":"come","zh":"來","category":"基本動作","emoji":"🏃","example":"Come here, please.","grade":7},{"id":93,"word":"sit","zh":"坐","category":"基本動作","emoji":"🏃","example":"Sit down, please.","grade":7},{"id":94,"word":"stand","zh":"站","category":"基本動作","emoji":"🏃","example":"Stand up.","grade":7},{"id":95,"word":"walk","zh":"走","category":"基本動作","emoji":"🏃","example":"I walk to school.","grade":7},{"id":96,"word":"run","zh":"跑","category":"基本動作","emoji":"🏃","example":"He can run fast.","grade":7},{"id":97,"word":"eat","zh":"吃","category":"基本動作","emoji":"🏃","example":"I want to eat an apple.","grade":7},{"id":98,"word":"drink","zh":"喝","category":"基本動作","emoji":"🏃","example":"Drink your milk.","grade":7},{"id":99,"word":"sleep","zh":"睡覺","category":"基本動作","emoji":"🏃","example":"I need to sleep.","grade":7},{"id":100,"word":"play","zh":"玩","category":"基本動作","emoji":"🏃","example":"Let's play outside.","grade":7},{"id":101,"word":"car","zh":"汽車","category":"交通工具","emoji":"🚗","example":"He drives a red car.","grade":8},{"id":102,"word":"bus","zh":"公車","category":"交通工具","emoji":"🚗","example":"I take a bus to school.","grade":8},{"id":103,"word":"train","zh":"火車","category":"交通工具","emoji":"🚗","example":"The train is very fast.","grade":8},{"id":104,"word":"bike","zh":"腳踏車","category":"交通工具","emoji":"🚗","example":"I ride my bike on weekends.","grade":8},{"id":105,"word":"boat","zh":"小船","category":"交通工具","emoji":"🚗","example":"We rent a boat on the lake.","grade":8},{"id":106,"word":"ship","zh":"船","category":"交通工具","emoji":"🚗","example":"The large ship carries goods.","grade":8},{"id":107,"word":"plane","zh":"飛機","category":"交通工具","emoji":"🚗","example":"The plane flies high.","grade":8},{"id":108,"word":"taxi","zh":"計程車","category":"交通工具","emoji":"🚗","example":"Let's call a taxi.","grade":8},{"id":109,"word":"truck","zh":"卡車","category":"交通工具","emoji":"🚗","example":"The truck is moving heavy things.","grade":8},{"id":110,"word":"motorcycle","zh":"摩托車","category":"交通工具","emoji":"🚗","example":"He rides a motorcycle to work.","grade":8},{"id":111,"word":"school","zh":"學校","category":"地點","emoji":"🗺️","example":"I am studying at school.","grade":8},{"id":112,"word":"park","zh":"公園","category":"地點","emoji":"🗺️","example":"Kids are playing in the park.","grade":8},{"id":113,"word":"hospital","zh":"醫院","category":"地點","emoji":"🗺️","example":"He works at a hospital.","grade":8},{"id":114,"word":"bank","zh":"銀行","category":"地點","emoji":"🗺️","example":"I need to go to the bank.","grade":8},{"id":115,"word":"library","zh":"圖書館","category":"地點","emoji":"🗺️","example":"Please be quiet in the library.","grade":8},{"id":116,"word":"zoo","zh":"動物園","category":"地點","emoji":"🗺️","example":"We saw monkeys at the zoo.","grade":8},{"id":117,"word":"museum","zh":"博物館","category":"地點","emoji":"🗺️","example":"The museum has old paintings.","grade":8},{"id":118,"word":"store","zh":"商店","category":"地點","emoji":"🗺️","example":"I bought this at the clothing store.","grade":8},{"id":119,"word":"market","zh":"市場","category":"地點","emoji":"🗺️","example":"My mom buys vegetables at the market.","grade":8},{"id":120,"word":"restaurant","zh":"餐廳","category":"地點","emoji":"🗺️","example":"They had dinner at a fancy restaurant.","grade":8},{"id":121,"word":"morning","zh":"早上","category":"時間","emoji":"⏰","example":"Good morning!","grade":8},{"id":122,"word":"afternoon","zh":"下午","category":"時間","emoji":"⏰","example":"I study in the afternoon.","grade":8},{"id":123,"word":"evening","zh":"傍晚","category":"時間","emoji":"⏰","example":"We watch TV in the evening.","grade":8},{"id":124,"word":"night","zh":"夜晚","category":"時間","emoji":"⏰","example":"The stars shine at night.","grade":8},{"id":125,"word":"day","zh":"天","category":"時間","emoji":"⏰","example":"Have a nice day.","grade":8},{"id":126,"word":"week","zh":"週","category":"時間","emoji":"⏰","example":"I will go next week.","grade":8},{"id":127,"word":"month","zh":"月","category":"時間","emoji":"⏰","example":"February is a short month.","grade":8},{"id":128,"word":"year","zh":"年","category":"時間","emoji":"⏰","example":"Happy new year!","grade":8},{"id":129,"word":"today","zh":"今天","category":"時間","emoji":"⏰","example":"Today is Monday.","grade":8},{"id":130,"word":"tomorrow","zh":"明天","category":"時間","emoji":"⏰","example":"See you tomorrow.","grade":8},{"id":131,"word":"sunny","zh":"晴朗的","category":"天氣","emoji":"🌤️","example":"It is a sunny day.","grade":8},{"id":132,"word":"rainy","zh":"下雨的","category":"天氣","emoji":"🌤️","example":"Bring an umbrella for the rainy day.","grade":8},{"id":133,"word":"cloudy","zh":"多雲的","category":"天氣","emoji":"🌤️","example":"The sky is cloudy.","grade":8},{"id":134,"word":"windy","zh":"起風的","category":"天氣","emoji":"🌤️","example":"It is very windy outside.","grade":8},{"id":135,"word":"snowy","zh":"下雪的","category":"天氣","emoji":"🌤️","example":"We can build a snowman on a snowy day.","grade":8},{"id":136,"word":"hot","zh":"熱的","category":"天氣","emoji":"🌤️","example":"Summer in Taiwan is hot.","grade":8},{"id":137,"word":"cold","zh":"冷的","category":"天氣","emoji":"🌤️","example":"It is too cold to swim.","grade":8},{"id":138,"word":"warm","zh":"溫暖的","category":"天氣","emoji":"🌤️","example":"Spring is warm.","grade":8},{"id":139,"word":"cool","zh":"涼爽的","category":"天氣","emoji":"🌤️","example":"The weather is cool in autumn.","grade":8},{"id":140,"word":"dry","zh":"乾燥的","category":"天氣","emoji":"🌤️","example":"The air is very dry in winter.","grade":8},{"id":141,"word":"happy","zh":"快樂的","category":"情緒","emoji":"😄","example":"She looks happy today.","grade":8},{"id":142,"word":"sad","zh":"悲傷的","category":"情緒","emoji":"😄","example":"The sad movie made me cry.","grade":8},{"id":143,"word":"angry","zh":"生氣的","category":"情緒","emoji":"😄","example":"He was angry about the mistake.","grade":8},{"id":144,"word":"excited","zh":"興奮的","category":"情緒","emoji":"😄","example":"I am excited for the trip.","grade":8},{"id":145,"word":"tired","zh":"疲倦的","category":"情緒","emoji":"😄","example":"I am tired after running.","grade":8},{"id":146,"word":"bored","zh":"無聊的","category":"情緒","emoji":"😄","example":"He felt bored during the speech.","grade":8},{"id":147,"word":"scared","zh":"害怕的","category":"情緒","emoji":"😄","example":"She is scared of spiders.","grade":8},{"id":148,"word":"surprised","zh":"驚訝的","category":"情緒","emoji":"😄","example":"He was surprised by the party.","grade":8},{"id":149,"word":"nervous","zh":"緊張的","category":"情緒","emoji":"😄","example":"I feel nervous before tests.","grade":8},{"id":150,"word":"proud","zh":"驕傲的","category":"情緒","emoji":"😄","example":"My parents are proud of me.","grade":8},{"id":151,"word":"doctor","zh":"醫生","category":"職業","emoji":"💼","example":"The doctor helped the sick child.","grade":8},{"id":152,"word":"nurse","zh":"護理師","category":"職業","emoji":"💼","example":"The nurse checks on patients.","grade":8},{"id":153,"word":"police","zh":"警察","category":"職業","emoji":"💼","example":"The police caught the bad guy.","grade":8},{"id":154,"word":"farmer","zh":"農夫","category":"職業","emoji":"💼","example":"The farmer grows vegetables.","grade":8},{"id":155,"word":"cook","zh":"廚師","category":"職業","emoji":"💼","example":"My uncle is a great cook.","grade":8},{"id":156,"word":"singer","zh":"歌手","category":"職業","emoji":"💼","example":"She wants to be a famous singer.","grade":8},{"id":157,"word":"actor","zh":"演員","category":"職業","emoji":"💼","example":"He is a popular actor.","grade":8},{"id":158,"word":"writer","zh":"作家","category":"職業","emoji":"💼","example":"The writer published a new book.","grade":8},{"id":159,"word":"driver","zh":"司機","category":"職業","emoji":"💼","example":"The bus driver is very careful.","grade":8},{"id":160,"word":"worker","zh":"工人","category":"職業","emoji":"💼","example":"The hard worker finished the job.","grade":8},{"id":161,"word":"music","zh":"音樂","category":"興趣","emoji":"🎸","example":"I like listening to pop music.","grade":8},{"id":162,"word":"art","zh":"藝術","category":"興趣","emoji":"🎸","example":"She enjoys her art class.","grade":8},{"id":163,"word":"sports","zh":"運動","category":"興趣","emoji":"🎸","example":"He plays many kinds of sports.","grade":8},{"id":164,"word":"game","zh":"遊戲","category":"興趣","emoji":"🎸","example":"Let's play a video game.","grade":8},{"id":165,"word":"movie","zh":"電影","category":"興趣","emoji":"🎸","example":"We went to see a movie.","grade":8},{"id":166,"word":"song","zh":"歌曲","category":"興趣","emoji":"🎸","example":"She sang a beautiful song.","grade":8},{"id":167,"word":"dance","zh":"跳舞","category":"興趣","emoji":"🎸","example":"They dance very well.","grade":8},{"id":168,"word":"piano","zh":"鋼琴","category":"興趣","emoji":"🎸","example":"She practices the piano daily.","grade":8},{"id":169,"word":"guitar","zh":"吉他","category":"興趣","emoji":"🎸","example":"He plays the acoustic guitar.","grade":8},{"id":170,"word":"violin","zh":"小提琴","category":"興趣","emoji":"🎸","example":"Learning the violin takes time.","grade":8},{"id":171,"word":"big","zh":"大的","category":"狀態形容詞","emoji":"🌟","example":"They live in a big house.","grade":8},{"id":172,"word":"small","zh":"小的","category":"狀態形容詞","emoji":"🌟","example":"She has a small dog.","grade":8},{"id":173,"word":"tall","zh":"高的","category":"狀態形容詞","emoji":"🌟","example":"The building is very tall.","grade":8},{"id":174,"word":"short","zh":"矮的","category":"狀態形容詞","emoji":"🌟","example":"He is too short to reach it.","grade":8},{"id":175,"word":"long","zh":"長的","category":"狀態形容詞","emoji":"🌟","example":"It was a long journey.","grade":8},{"id":176,"word":"fast","zh":"快的","category":"狀態形容詞","emoji":"🌟","example":"Cheetahs are fast animals.","grade":8},{"id":177,"word":"slow","zh":"慢的","category":"狀態形容詞","emoji":"🌟","example":"Turtles are slow.","grade":8},{"id":178,"word":"good","zh":"好的","category":"狀態形容詞","emoji":"🌟","example":"This is a good idea.","grade":8},{"id":179,"word":"bad","zh":"壞的","category":"狀態形容詞","emoji":"🌟","example":"Smoking is bad for health.","grade":8},{"id":180,"word":"beautiful","zh":"美麗的","category":"狀態形容詞","emoji":"🌟","example":"She is a beautiful girl.","grade":8},{"id":181,"word":"door","zh":"門","category":"房屋","emoji":"🏠","example":"Please close the door.","grade":8},{"id":182,"word":"window","zh":"窗戶","category":"房屋","emoji":"🏠","example":"Open the window for fresh air.","grade":8},{"id":183,"word":"wall","zh":"牆壁","category":"房屋","emoji":"🏠","example":"There is a clock on the wall.","grade":8},{"id":184,"word":"floor","zh":"地板","category":"房屋","emoji":"🏠","example":"The baby is crawling on the floor.","grade":8},{"id":185,"word":"room","zh":"房間","category":"房屋","emoji":"🏠","example":"My room is very clean.","grade":8},{"id":186,"word":"kitchen","zh":"廚房","category":"房屋","emoji":"🏠","example":"Mom is cooking in the kitchen.","grade":8},{"id":187,"word":"bathroom","zh":"浴室","category":"房屋","emoji":"🏠","example":"I need to use the bathroom.","grade":8},{"id":188,"word":"bedroom","zh":"臥室","category":"房屋","emoji":"🏠","example":"He sleeps in his bedroom.","grade":8},{"id":189,"word":"bed","zh":"床","category":"房屋","emoji":"🏠","example":"The bed is very soft.","grade":8},{"id":190,"word":"sofa","zh":"沙發","category":"房屋","emoji":"🏠","example":"We sat on the sofa to watch TV.","grade":8},{"id":191,"word":"buy","zh":"買","category":"日常行為","emoji":"🛠️","example":"I want to buy a new phone.","grade":8},{"id":192,"word":"sell","zh":"賣","category":"日常行為","emoji":"🛠️","example":"They sell fresh fruit here.","grade":8},{"id":193,"word":"read","zh":"讀","category":"日常行為","emoji":"🛠️","example":"She reads books before bed.","grade":8},{"id":194,"word":"write","zh":"寫","category":"日常行為","emoji":"🛠️","example":"He likes to write stories.","grade":8},{"id":195,"word":"listen","zh":"聽","category":"日常行為","emoji":"🛠️","example":"Listen to me carefully.","grade":8},{"id":196,"word":"speak","zh":"說","category":"日常行為","emoji":"🛠️","example":"She can speak English well.","grade":8},{"id":197,"word":"watch","zh":"觀看","category":"日常行為","emoji":"🛠️","example":"We watch baseball games together.","grade":8},{"id":198,"word":"see","zh":"看見","category":"日常行為","emoji":"🛠️","example":"I can see the mountain from here.","grade":8},{"id":199,"word":"hear","zh":"聽見","category":"日常行為","emoji":"🛠️","example":"Did you hear that sound?","grade":8},{"id":200,"word":"learn","zh":"學習","category":"日常行為","emoji":"🛠️","example":"I want to learn swimming.","grade":8},{"id":201,"word":"love","zh":"愛","category":"抽象概念","emoji":"💭","example":"A mother's love is great.","grade":9},{"id":202,"word":"peace","zh":"和平","category":"抽象概念","emoji":"💭","example":"Everyone hopes for world peace.","grade":9},{"id":203,"word":"truth","zh":"真相","category":"抽象概念","emoji":"💭","example":"You must tell me the truth.","grade":9},{"id":204,"word":"hope","zh":"希望","category":"抽象概念","emoji":"💭","example":"There is always hope.","grade":9},{"id":205,"word":"dream","zh":"夢想","category":"抽象概念","emoji":"💭","example":"My dream is to travel the world.","grade":9},{"id":206,"word":"trouble","zh":"麻煩","category":"抽象概念","emoji":"💭","example":"He got into a lot of trouble.","grade":9},{"id":207,"word":"power","zh":"力量","category":"抽象概念","emoji":"💭","example":"Knowledge is power.","grade":9},{"id":208,"word":"reason","zh":"理由","category":"抽象概念","emoji":"💭","example":"Give me a reason for being late.","grade":9},{"id":209,"word":"excuse","zh":"藉口","category":"抽象概念","emoji":"💭","example":"No more excuses for your mistakes.","grade":9},{"id":210,"word":"memory","zh":"記憶","category":"抽象概念","emoji":"💭","example":"She has a good memory.","grade":9},{"id":211,"word":"history","zh":"歷史","category":"社會與文化","emoji":"🌍","example":"I am interested in Chinese history.","grade":9},{"id":212,"word":"culture","zh":"文化","category":"社會與文化","emoji":"🌍","example":"Taiwan has a rich culture.","grade":9},{"id":213,"word":"science","zh":"科學","category":"社會與文化","emoji":"🌍","example":"Science helps us understand the world.","grade":9},{"id":214,"word":"society","zh":"社會","category":"社會與文化","emoji":"🌍","example":"We live in a modern society.","grade":9},{"id":215,"word":"language","zh":"語言","category":"社會與文化","emoji":"🌍","example":"English is a useful language.","grade":9},{"id":216,"word":"law","zh":"法律","category":"社會與文化","emoji":"🌍","example":"Everyone must follow the law.","grade":9},{"id":217,"word":"government","zh":"政府","category":"社會與文化","emoji":"🌍","example":"The government announced a new policy.","grade":9},{"id":218,"word":"country","zh":"國家","category":"社會與文化","emoji":"🌍","example":"Which country are you from?","grade":9},{"id":219,"word":"world","zh":"世界","category":"社會與文化","emoji":"🌍","example":"It is a small world.","grade":9},{"id":220,"word":"nation","zh":"國家","category":"社會與文化","emoji":"🌍","example":"The whole nation celebrated the victory.","grade":9},{"id":221,"word":"computer","zh":"電腦","category":"科技","emoji":"💻","example":"I work on my computer daily.","grade":9},{"id":222,"word":"internet","zh":"網路","category":"科技","emoji":"💻","example":"You can find it on the internet.","grade":9},{"id":223,"word":"website","zh":"網站","category":"科技","emoji":"💻","example":"This website is very helpful.","grade":9},{"id":224,"word":"email","zh":"電子郵件","category":"科技","emoji":"💻","example":"Please send me an email.","grade":9},{"id":225,"word":"screen","zh":"螢幕","category":"科技","emoji":"💻","example":"My phone screen is broken.","grade":9},{"id":226,"word":"keyboard","zh":"鍵盤","category":"科技","emoji":"💻","example":"I need a new keyboard.","grade":9},{"id":227,"word":"machine","zh":"機器","category":"科技","emoji":"💻","example":"This machine is very loud.","grade":9},{"id":228,"word":"robot","zh":"機器人","category":"科技","emoji":"💻","example":"The robot can clean the floor.","grade":9},{"id":229,"word":"radio","zh":"廣播","category":"科技","emoji":"💻","example":"He listens to the radio in his car.","grade":9},{"id":230,"word":"video","zh":"影片","category":"科技","emoji":"💻","example":"We watched a funny video online.","grade":9},{"id":231,"word":"word","zh":"字","category":"溝通","emoji":"🗣️","example":"I don't know this English word.","grade":9},{"id":232,"word":"sentence","zh":"句子","category":"溝通","emoji":"🗣️","example":"Please make a sentence with this word.","grade":9},{"id":233,"word":"idea","zh":"點子","category":"溝通","emoji":"🗣️","example":"That is a brilliant idea.","grade":9},{"id":234,"word":"message","zh":"訊息","category":"溝通","emoji":"🗣️","example":"I left a message for him.","grade":9},{"id":235,"word":"news","zh":"新聞","category":"溝通","emoji":"🗣️","example":"I heard the news on TV.","grade":9},{"id":236,"word":"voice","zh":"聲音","category":"溝通","emoji":"🗣️","example":"She has a beautiful singing voice.","grade":9},{"id":237,"word":"question","zh":"問題","category":"溝通","emoji":"🗣️","example":"May I ask a question?","grade":9},{"id":238,"word":"answer","zh":"答案","category":"溝通","emoji":"🗣️","example":"I don't know the answer.","grade":9},{"id":239,"word":"story","zh":"故事","category":"溝通","emoji":"🗣️","example":"My grandma told me a bedtime story.","grade":9},{"id":240,"word":"sign","zh":"標誌","category":"溝通","emoji":"🗣️","example":"Look at the traffic sign.","grade":9},{"id":241,"word":"party","zh":"派對","category":"事件與活動","emoji":"🎉","example":"Are you going to the birthday party?","grade":9},{"id":242,"word":"holiday","zh":"假日","category":"事件與活動","emoji":"🎉","example":"We went to Japan during the holiday.","grade":9},{"id":243,"word":"festival","zh":"節慶","category":"事件與活動","emoji":"🎉","example":"The Lantern Festival is fun.","grade":9},{"id":244,"word":"trip","zh":"旅行","category":"事件與活動","emoji":"🎉","example":"How was your trip to Tainan?","grade":9},{"id":245,"word":"vacation","zh":"假期","category":"事件與活動","emoji":"🎉","example":"Summer vacation is my favorite time.","grade":9},{"id":246,"word":"meeting","zh":"會議","category":"事件與活動","emoji":"🎉","example":"The boss is in a meeting.","grade":9},{"id":247,"word":"test","zh":"小考","category":"事件與活動","emoji":"🎉","example":"We have an English test tomorrow.","grade":9},{"id":248,"word":"exam","zh":"考試","category":"事件與活動","emoji":"🎉","example":"He passed the final exam easily.","grade":9},{"id":249,"word":"war","zh":"戰爭","category":"事件與活動","emoji":"🎉","example":"War brings pain to people.","grade":9},{"id":250,"word":"accident","zh":"意外","category":"事件與活動","emoji":"🎉","example":"There was a car accident yesterday.","grade":9},{"id":251,"word":"important","zh":"重要的","category":"進階形容詞","emoji":"💡","example":"It is important to study hard.","grade":9},{"id":252,"word":"dangerous","zh":"危險的","category":"進階形容詞","emoji":"💡","example":"Swimming here is dangerous.","grade":9},{"id":253,"word":"careful","zh":"小心的","category":"進階形容詞","emoji":"💡","example":"Be careful when crossing the street.","grade":9},{"id":254,"word":"serious","zh":"嚴肅的","category":"進階形容詞","emoji":"💡","example":"He looks very serious.","grade":9},{"id":255,"word":"difficult","zh":"困難的","category":"進階形容詞","emoji":"💡","example":"This math problem is difficult.","grade":9},{"id":256,"word":"easy","zh":"簡單的","category":"進階形容詞","emoji":"💡","example":"The task was quite easy.","grade":9},{"id":257,"word":"strange","zh":"奇怪的","category":"進階形容詞","emoji":"💡","example":"I heard a strange noise.","grade":9},{"id":258,"word":"real","zh":"真實的","category":"進階形容詞","emoji":"💡","example":"Is this story real?","grade":9},{"id":259,"word":"true","zh":"正確的","category":"進階形容詞","emoji":"💡","example":"It is true that he left.","grade":9},{"id":260,"word":"false","zh":"錯誤的","category":"進階形容詞","emoji":"💡","example":"The rumor turned out to be false.","grade":9},{"id":261,"word":"believe","zh":"相信","category":"進階動詞","emoji":"🧠","example":"I believe you can do it.","grade":9},{"id":262,"word":"remember","zh":"記得","category":"進階動詞","emoji":"🧠","example":"I remember his name now.","grade":9},{"id":263,"word":"forget","zh":"忘記","category":"進階動詞","emoji":"🧠","example":"Don't forget to lock the door.","grade":9},{"id":264,"word":"understand","zh":"了解","category":"進階動詞","emoji":"🧠","example":"Do you understand the lesson?","grade":9},{"id":265,"word":"guess","zh":"猜測","category":"進階動詞","emoji":"🧠","example":"Can you guess what is inside?","grade":9},{"id":266,"word":"decide","zh":"決定","category":"進階動詞","emoji":"🧠","example":"We decided to go to the park.","grade":9},{"id":267,"word":"agree","zh":"同意","category":"進階動詞","emoji":"🧠","example":"I agree with your plan.","grade":9},{"id":268,"word":"happen","zh":"發生","category":"進階動詞","emoji":"🧠","example":"What happened to your leg?","grade":9},{"id":269,"word":"become","zh":"變成","category":"進階動詞","emoji":"🧠","example":"The caterpillar will become a butterfly.","grade":9},{"id":270,"word":"prepare","zh":"準備","category":"進階動詞","emoji":"🧠","example":"She prepared dinner for us.","grade":9},{"id":271,"word":"north","zh":"北方","category":"方向與位置","emoji":"🧭","example":"Taipei is in the north of Taiwan.","grade":9},{"id":272,"word":"south","zh":"南方","category":"方向與位置","emoji":"🧭","example":"Birds fly south in winter.","grade":9},{"id":273,"word":"east","zh":"東方","category":"方向與位置","emoji":"🧭","example":"The sun rises in the east.","grade":9},{"id":274,"word":"west","zh":"西方","category":"方向與位置","emoji":"🧭","example":"The sun sets in the west.","grade":9},{"id":275,"word":"front","zh":"前面","category":"方向與位置","emoji":"🧭","example":"He is sitting in the front row.","grade":9},{"id":276,"word":"back","zh":"後面","category":"方向與位置","emoji":"🧭","example":"The garden is at the back of the house.","grade":9},{"id":277,"word":"middle","zh":"中間","category":"方向與位置","emoji":"🧭","example":"He stood in the middle of the room.","grade":9},{"id":278,"word":"left","zh":"左邊","category":"方向與位置","emoji":"🧭","example":"Turn left at the next corner.","grade":9},{"id":279,"word":"right","zh":"右邊","category":"方向與位置","emoji":"🧭","example":"Keep on the right side of the road.","grade":9},{"id":280,"word":"center","zh":"中心","category":"方向與位置","emoji":"🧭","example":"The table is in the center of the room.","grade":9},{"id":281,"word":"fever","zh":"發燒","category":"健康與醫療","emoji":"🏥","example":"He caught a cold and has a high fever.","grade":9},{"id":282,"word":"headache","zh":"頭痛","category":"健康與醫療","emoji":"🏥","example":"I have a terrible headache.","grade":9},{"id":283,"word":"medicine","zh":"藥物","category":"健康與醫療","emoji":"🏥","example":"You should take your medicine.","grade":9},{"id":284,"word":"health","zh":"健康","category":"健康與醫療","emoji":"🏥","example":"Exercise is good for your health.","grade":9},{"id":285,"word":"pain","zh":"痛苦","category":"健康與醫療","emoji":"🏥","example":"He felt a sharp pain in his back.","grade":9},{"id":286,"word":"danger","zh":"危險","category":"健康與醫療","emoji":"🏥","example":"The animals are in danger.","grade":9},{"id":287,"word":"life","zh":"生命","category":"健康與醫療","emoji":"🏥","example":"Water is essential for life.","grade":9},{"id":288,"word":"death","zh":"死亡","category":"健康與醫療","emoji":"🏥","example":"The accident caused his death.","grade":9},{"id":289,"word":"blood","zh":"血液","category":"健康與醫療","emoji":"🏥","example":"She lost a lot of blood.","grade":9},{"id":290,"word":"disease","zh":"疾病","category":"健康與醫療","emoji":"🏥","example":"Washing hands can prevent disease.","grade":9},{"id":291,"word":"paper","zh":"紙","category":"材質與形狀","emoji":"📐","example":"I need a piece of paper to write on.","grade":9},{"id":292,"word":"glass","zh":"玻璃","category":"材質與形狀","emoji":"📐","example":"The window is made of glass.","grade":9},{"id":293,"word":"plastic","zh":"塑膠","category":"材質與形狀","emoji":"📐","example":"We should use less plastic.","grade":9},{"id":294,"word":"metal","zh":"金屬","category":"材質與形狀","emoji":"📐","example":"Keys are usually made of metal.","grade":9},{"id":295,"word":"wood","zh":"木頭","category":"材質與形狀","emoji":"📐","example":"The desk is made of solid wood.","grade":9},{"id":296,"word":"circle","zh":"圓形","category":"材質與形狀","emoji":"📐","example":"The students sat in a circle.","grade":9},{"id":297,"word":"square","zh":"正方形","category":"材質與形狀","emoji":"📐","example":"A square has four equal sides.","grade":9},{"id":298,"word":"line","zh":"線","category":"材質與形狀","emoji":"📐","example":"Draw a straight line.","grade":9},{"id":299,"word":"shape","zh":"形狀","category":"材質與形狀","emoji":"📐","example":"The cloud is in the shape of a heart.","grade":9},{"id":300,"word":"size","zh":"尺寸","category":"材質與形狀","emoji":"📐","example":"What size of shoes do you wear?","grade":9}];
+const KEY = 'juniorEnglishV1';
+const GUIDE_KEY = 'juniorGuideShown';
+
+// ── SRS intervals (minutes) ──
+const INTERVALS = {again:10, hard:1440, good:4320, easy:10080};
+
+// ── STATE ──
+let s = {daily:10, round:10};
+let progress = {}; // word id → {interval, due, ease, reps, hard}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const d = JSON.parse(raw);
+      s = Object.assign({daily:10, round:10}, d.settings||{});
+      // validate
+      if(![5,10,15,20].includes(s.daily)) s.daily=10;
+      if(![5,10,15,20].includes(s.round)) s.round=10;
+      progress = d.progress||{};
+    }
+  }catch(e){progress={};s={daily:10,round:10};}
+}
+function saveData(){
+  const today = todayStr();
+  // update streak
+  if(!s.lastDate){s.streak=1;s.lastDate=today;}
+  else if(s.lastDate===today){}
+  else{
+    const prev = new Date(s.lastDate);
+    const cur = new Date(today);
+    const diff = (cur-prev)/(86400000);
+    if(diff<=1.5) s.streak=(s.streak||0)+1;
+    else s.streak=1;
+    s.lastDate=today;
+  }
+  localStorage.setItem(KEY, JSON.stringify({settings:s, progress}));
+}
+function todayStr(){return new Date().toISOString().slice(0,10)}
+function nowMin(){return Math.floor(Date.now()/60000)}
+
+function getWordState(id){
+  const p = progress[id];
+  if(!p) return 'new';
+  if(p.due<=nowMin()) return 'due';
+  return 'learned';
+}
+
+// ── HOME ──
+function renderHome(){
+  document.getElementById('home-date').textContent = new Date().toLocaleDateString('zh-TW',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const learned = WORDS.filter(w=>progress[w.id]&&progress[w.id].reps>0).length;
+  const due = WORDS.filter(w=>getWordState(w.id)==='due').length;
+  const todayDone = s.todayDone||0;
+  document.getElementById('stat-learned').textContent=learned;
+  document.getElementById('stat-today').textContent=todayDone;
+  document.getElementById('stat-streak').textContent=s.streak||0;
+  document.getElementById('stat-due').textContent=due;
+  // mission
+  const goal = s.daily;
+  const pct = Math.min(100,Math.round(todayDone/goal*100));
+  document.getElementById('mission-bar').style.width=pct+'%';
+  document.getElementById('mission-done').textContent=todayDone+' / '+goal;
+  document.getElementById('mission-pct').textContent=pct+'%';
+  // recent
+  const recents = Object.entries(progress)
+    .filter(([,p])=>p.lastSeen)
+    .sort(([,a],[,b])=>b.lastSeen-a.lastSeen)
+    .slice(0,6)
+    .map(([id])=>WORDS.find(w=>w.id==id))
+    .filter(Boolean);
+  const el = document.getElementById('recent-list');
+  if(!recents.length){el.innerHTML='<div class="empty-state"><p>還沒有學習紀錄</p><p>去閃卡分頁開始學習吧！</p></div>';return;}
+  el.innerHTML = recents.map(w=>{
+    const st = getWordState(w.id);
+    const p = progress[w.id];
+    const badgeClass = p&&p.hard ? 'badge-hard' : st==='new' ? 'badge-new' : 'badge-review';
+    const badgeText = p&&p.hard ? '困難' : st==='new' ? '新字' : '複習';
+    return `<div class="recent-word"><div><div class="rw-word">${w.word}</div><div class="rw-zh">${w.zh}</div></div><span class="rw-badge ${badgeClass}">${badgeText}</span></div>`;
+  }).join('');
+}
+
+// ── FLASHCARD ──
+let fcGrade=null, fcMode=null;
+let pool=[], poolIdx=0, flipped=false, currentWord=null;
+let sessionStats={again:0,hard:0,good:0,easy:0};
+let inSession=false;
+
+function initFlashUI(){
+  document.querySelectorAll('.grade-btn[data-g]').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.grade-btn[data-g]').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    fcGrade=parseInt(this.dataset.g);
+    updateStartBtn();
+  });
+  document.querySelectorAll('.mode-btn[data-m]').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.mode-btn[data-m]').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    fcMode=this.dataset.m;
+    updateStartBtn();
+  });
+  document.getElementById('start-btn').onclick=startSession;
+  document.getElementById('session-back').onclick=()=>{if(confirm('確定結束這輪練習？'))backToMenu();};
+  document.getElementById('the-card').onclick=flipCard;
+  document.getElementById('speak-btn').onclick=speakWord;
+}
+
+function updateStartBtn(){
+  const btn=document.getElementById('start-btn');
+  if(fcGrade&&fcMode){btn.disabled=false;btn.textContent='▶ 開始練習';}
+  else{btn.disabled=true;btn.textContent='選好年級和練習方式再開始';}
+}
+
+function buildPool(){
+  const base = WORDS.filter(w=>w.grade<=fcGrade);
+  const now = nowMin();
+  let result=[];
+  switch(fcMode){
+    case 'new':
+      result=base.filter(w=>getWordState(w.id)==='new');
+      break;
+    case 'mission':{
+      const newDone = (s.todayNew)||0;
+      const remaining = Math.max(0, s.daily-newDone);
+      const newWords = base.filter(w=>getWordState(w.id)==='new').slice(0,remaining);
+      const due = base.filter(w=>getWordState(w.id)==='due');
+      result=[...newWords,...due];
+      break;
+    }
+    case 'weak':
+      result=base.filter(w=>progress[w.id]&&progress[w.id].hard);
+      break;
+    case 'review':
+      result=base.filter(w=>getWordState(w.id)==='due'||getWordState(w.id)==='learned'&&progress[w.id]);
+      break;
+    case 'free':
+    default:{
+      const due=base.filter(w=>getWordState(w.id)==='due');
+      const newW=base.filter(w=>getWordState(w.id)==='new');
+      // mix: prioritise due, fill with new
+      result=[...shuffle(due),...shuffle(newW)];
+      break;
+    }
+  }
+  if(!result.length) result=base.filter(w=>getWordState(w.id)==='new');
+  if(!result.length) result=[...base];
+  return shuffle(result).slice(0,s.round);
+}
+
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5)}
+
+function startSession(){
+  pool=buildPool();
+  poolIdx=0;
+  sessionStats={again:0,hard:0,good:0,easy:0};
+  inSession=true;
+  document.getElementById('fc-menu').style.display='none';
+  document.getElementById('fc-session').style.display='flex';
+  document.getElementById('session-done').style.display='none';
+  document.getElementById('card-area').style.display='flex';
+  document.getElementById('rating-row').style.display='none';
+  document.getElementById('settings-gear').style.display='none';
+  showCard();
+}
+
+function showCard(){
+  if(poolIdx>=pool.length){endSession();return;}
+  currentWord=pool[poolIdx];
+  flipped=false;
+  const card=document.getElementById('the-card');
+  card.classList.remove('flipped');
+  document.getElementById('cf-tag').textContent=`${currentWord.grade}年級 · ${currentWord.emoji||''}${currentWord.category}`;
+  document.getElementById('cf-word').textContent=currentWord.word;
+  document.getElementById('cf-phonetic').textContent='';
+  document.getElementById('cb-zh').textContent=currentWord.zh;
+  document.getElementById('cb-cat').textContent=currentWord.emoji+' '+currentWord.category;
+  document.getElementById('cb-ex').textContent=currentWord.example||'';
+  document.getElementById('rating-row').style.display='none';
+  // progress bar
+  const pct=Math.round(poolIdx/pool.length*100);
+  document.getElementById('session-bar').style.width=pct+'%';
+  document.getElementById('session-count').textContent=`${poolIdx+1}/${pool.length}`;
+}
+
+function flipCard(){
+  if(flipped) return;
+  flipped=true;
+  document.getElementById('the-card').classList.add('flipped');
+  document.getElementById('rating-row').style.display='flex';
+}
+
+function speakWord(){
+  if(!currentWord) return;
+  const u=new SpeechSynthesisUtterance(currentWord.word);
+  u.lang='en-US';u.rate=0.85;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+function rate(r){
+  if(!currentWord) return;
+  const id=currentWord.id;
+  const now=nowMin();
+  const p=progress[id]||{reps:0,ease:2.5,interval:1};
+  p.reps=(p.reps||0)+1;
+  p.lastSeen=Date.now();
+  if(r==='again'){p.interval=INTERVALS.again;p.hard=true;}
+  else if(r==='hard'){p.interval=INTERVALS.hard;p.hard=true;}
+  else if(r==='good'){p.interval=INTERVALS.good;p.hard=false;}
+  else{p.interval=INTERVALS.easy;p.hard=false;}
+  p.due=now+p.interval;
+  progress[id]=p;
+  // today stats
+  if(!s.todayDate||s.todayDate!==todayStr()){s.todayDate=todayStr();s.todayDone=0;s.todayNew=0;}
+  s.todayDone=(s.todayDone||0)+1;
+  if(p.reps===1) s.todayNew=(s.todayNew||0)+1;
+  sessionStats[r]++;
+  saveData();
+  poolIdx++;
+  if(r==='again'&&poolIdx<pool.length){
+    // insert again at random later position
+    const insert=Math.min(pool.length, poolIdx+2+Math.floor(Math.random()*3));
+    pool.splice(insert,0,currentWord);
+  }
+  showCard();
+}
+
+function endSession(){
+  document.getElementById('card-area').style.display='none';
+  document.getElementById('rating-row').style.display='none';
+  document.getElementById('session-done').style.display='flex';
+  const total=sessionStats.again+sessionStats.hard+sessionStats.good+sessionStats.easy;
+  const correct=sessionStats.good+sessionStats.easy;
+  document.getElementById('done-sub').innerHTML=
+    `共 ${total} 張 · 記得了 ${correct} 張 · 再看看 ${sessionStats.again} 張<br>今日完成 ${s.todayDone}/${s.daily} 個`;
+  document.getElementById('session-bar').style.width='100%';
+}
+
+function backToMenu(){
+  inSession=false;
+  document.getElementById('fc-menu').style.display='flex';
+  document.getElementById('fc-session').style.display='none';
+  document.getElementById('settings-gear').style.display='flex';
+  // reset selections
+  document.querySelectorAll('.grade-btn[data-g]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mode-btn[data-m]').forEach(b=>b.classList.remove('active'));
+  fcGrade=null;fcMode=null;
+  updateStartBtn();
+  renderHome();
+}
+
+// ── MATCHING ──
+let matchGrade=null, matchTimerInterval=null, matchStart=null;
+let matchStreak=0, matchSelected=null, matchPairs=[], matchMatched=0;
+
+function initMatchUI(){
+  document.querySelectorAll('.grade-btn[data-mg]').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.grade-btn[data-mg]').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    matchGrade=this.dataset.mg;
+    document.getElementById('match-start-btn').disabled=false;
+    document.getElementById('match-start-btn').textContent='▶ 開始配對';
+  });
+  document.getElementById('match-start-btn').onclick=startMatch;
+}
+
+function startMatch(){
+  document.getElementById('match-start-panel').style.display='none';
+  matchStreak=0;matchSelected=null;matchMatched=0;
+  const pool = matchGrade==='all' ? WORDS : WORDS.filter(w=>w.grade==matchGrade);
+  matchPairs=shuffle(pool).slice(0,6);
+  renderMatchGrid();
+  document.getElementById('match-timer').textContent='00:00';
+  matchStart=Date.now();
+  if(matchTimerInterval) clearInterval(matchTimerInterval);
+  matchTimerInterval=setInterval(updateMatchTimer,1000);
+}
+
+function updateMatchTimer(){
+  const sec=Math.floor((Date.now()-matchStart)/1000);
+  const m=String(Math.floor(sec/60)).padStart(2,'0');
+  const s2=String(sec%60).padStart(2,'0');
+  const el=document.getElementById('match-timer');
+  el.textContent=m+':'+s2;
+  el.style.color=sec>60?'var(--red)':'var(--text2)';
+}
+
+function renderMatchGrid(){
+  const words=matchPairs;
+  let cells=[];
+  words.forEach(w=>{
+    cells.push({id:w.id,text:w.word,type:'en'});
+    cells.push({id:w.id,text:w.zh,type:'zh'});
+  });
+  cells=shuffle(cells);
+  const grid=document.getElementById('match-grid');
+  grid.innerHTML=cells.map((c,i)=>
+    `<div class="match-cell" data-idx="${i}" data-id="${c.id}" data-type="${c.type}" onclick="matchClick(this)">${c.text}</div>`
+  ).join('');
+  document.getElementById('streak-bar').textContent='';
+}
+
+function matchClick(el){
+  if(el.classList.contains('matched')) return;
+  if(matchSelected===el){el.classList.remove('selected');matchSelected=null;return;}
+  if(!matchSelected){el.classList.add('selected');matchSelected=el;return;}
+  const a=matchSelected,b=el;
+  if(a.dataset.id===b.dataset.id&&a.dataset.type!==b.dataset.type){
+    // correct
+    a.classList.remove('selected');a.classList.add('matched');
+    b.classList.add('matched');
+    matchSelected=null;matchStreak++;matchMatched++;
+    const streakEl=document.getElementById('streak-bar');
+    if(matchStreak>=2) streakEl.textContent=`🔥 連續 ${matchStreak} 個！`;
+    else streakEl.textContent='';
+    if(matchMatched>=matchPairs.length){
+      clearInterval(matchTimerInterval);
+      setTimeout(()=>matchDone(),400);
+    }
+  } else {
+    // wrong
+    a.classList.remove('selected');a.classList.add('wrong');b.classList.add('wrong');
+    matchStreak=0;document.getElementById('streak-bar').textContent='';
+    matchSelected=null;
+    setTimeout(()=>{a.classList.remove('wrong');b.classList.remove('wrong');},500);
+  }
+}
+
+function matchDone(){
+  const sec=Math.floor((Date.now()-matchStart)/1000);
+  const m=String(Math.floor(sec/60)).padStart(2,'0'),s2=String(sec%60).padStart(2,'0');
+  if(confirm(`🎉 完成！用時 ${m}:${s2}\n\n再來一輪？`)){
+    document.getElementById('match-start-panel').style.display='flex';
+    document.getElementById('match-grid').innerHTML='';
+    document.getElementById('streak-bar').textContent='';
+    document.getElementById('match-timer').textContent='00:00';
+  } else {
+    document.getElementById('match-start-panel').style.display='flex';
+    document.getElementById('match-grid').innerHTML='';
+  }
+}
+
+// ── PROGRESS ──
+let pgFilter='all', pgGrade='all';
+
+function initProgressUI(){
+  document.querySelectorAll('.prog-grade-btn').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.prog-grade-btn').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    pgGrade=this.dataset.pg;
+    renderProgress();
+  });
+  document.querySelectorAll('.filter-btn').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    pgFilter=this.dataset.f;
+    renderProgress();
+  });
+}
+
+function renderProgress(){
+  let words = pgGrade==='all' ? WORDS : WORDS.filter(w=>w.grade==pgGrade);
+  const learned=words.filter(w=>progress[w.id]&&progress[w.id].reps>0);
+  const due=words.filter(w=>getWordState(w.id)==='due');
+  const newW=words.filter(w=>getWordState(w.id)==='new');
+  document.getElementById('ps-learned').textContent=learned.length;
+  document.getElementById('ps-due').textContent=due.length;
+  document.getElementById('ps-new').textContent=newW.length;
+  // filter list
+  let list=words;
+  if(pgFilter==='learned') list=learned;
+  else if(pgFilter==='due') list=due;
+  else if(pgFilter==='new') list=newW;
+  else if(pgFilter==='hard') list=words.filter(w=>progress[w.id]&&progress[w.id].hard);
+  const el=document.getElementById('word-list');
+  if(!list.length){el.innerHTML='<div class="empty-state"><p>沒有符合條件的單字</p></div>';return;}
+  el.innerHTML=list.map(w=>{
+    const p=progress[w.id];
+    const st=getWordState(w.id);
+    let badge='',bc='';
+    if(!p||!p.reps){badge='新字';bc='badge-new';}
+    else if(p.hard){badge='困難';bc='badge-hard';}
+    else if(st==='due'){badge='待複習';bc='badge-review';}
+    else{badge='已學';bc='badge-review';}
+    const intv=p?Math.round(p.interval/1440)+'天後':'';
+    return `<div class="word-item">
+      <div style="flex:1"><div class="wi-word">${w.word}</div><div class="wi-zh">${w.zh}</div></div>
+      <span class="wi-badge ${bc}">${badge}</span>
+      ${intv?`<span class="wi-interval">${intv}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── SETTINGS ──
+function openSettings(){
+  if(inSession) return;
+  document.getElementById('set-daily').value=s.daily;
+  document.getElementById('set-round').value=s.round;
+  document.getElementById('settings-drawer').classList.add('open');
+}
+function closeSettings(){document.getElementById('settings-drawer').classList.remove('open');}
+function applySettings(){
+  s.daily=parseInt(document.getElementById('set-daily').value)||10;
+  s.round=parseInt(document.getElementById('set-round').value)||10;
+  saveData();closeSettings();renderHome();
+}
+
+// ── TABS ──
+function switchTab(tab){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+  document.querySelector(`.nav-btn[data-tab="${tab}"]`).classList.add('active');
+  if(tab==='home') renderHome();
+  if(tab==='prog') renderProgress();
+  if(tab==='flash'&&!inSession){
+    document.getElementById('fc-menu').style.display='flex';
+    document.getElementById('fc-session').style.display='none';
+  }
+  if(tab==='match'){
+    document.getElementById('match-start-panel').style.display='flex';
+  }
+}
+
+// ── EXPORT / IMPORT ──
+function exportData(){
+  const blob=new Blob([JSON.stringify({settings:s,progress},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='junior_english_progress.json';
+  a.click();
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.progress) progress=d.progress;
+      if(d.settings) s=Object.assign(s,d.settings);
+      saveData();renderHome();renderProgress();alert('✅ 進度匯入成功！');
+    }catch{alert('❌ 檔案格式錯誤');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+
+// ── INSTALL GUIDE ──
+function setInstallTab(t){
+  document.querySelectorAll('.install-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.install-tab[onclick*="${t}"]`).classList.add('active');
+  document.getElementById('install-ios').style.display=t==='ios'?'block':'none';
+  document.getElementById('install-android').style.display=t==='android'?'block':'none';
+}
+(function(){
+  const overlay=document.getElementById('install-overlay');
+  const isStandalone=window.navigator.standalone||window.matchMedia('(display-mode:standalone)').matches;
+  const shown=localStorage.getItem(GUIDE_KEY);
+  if(isStandalone||shown){overlay.style.display='none';}
+  document.getElementById('install-done').onclick=function(){localStorage.setItem(GUIDE_KEY,'1');overlay.style.display='none';};
+  document.getElementById('install-skip').onclick=function(){localStorage.setItem(GUIDE_KEY,'1');overlay.style.display='none';};
+})();
+
+// ── INIT ──
+loadData();
+initFlashUI();
+initMatchUI();
+initProgressUI();
+renderHome();
+</script>
+</body>
+</html>
