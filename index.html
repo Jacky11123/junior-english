@@ -311,6 +311,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         </button>
       </div>
     </div>
+    <div>
+      <div class="section-title">每輪題數</div>
+      <div class="grade-select-row">
+        <button class="grade-btn" data-r="5">5題</button>
+        <button class="grade-btn" data-r="10">10題</button>
+        <button class="grade-btn" data-r="15">15題</button>
+        <button class="grade-btn" data-r="20">20題</button>
+      </div>
+    </div>
     <button class="start-btn" id="start-btn" disabled>選好年級和練習方式再開始</button>
   </div>
 
@@ -438,15 +447,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <option value="20">20 個</option>
       </select>
     </div>
-    <div class="setting-row">
-      <label class="setting-label">每輪題數</label>
-      <select class="setting-select" id="set-round">
-        <option value="5">5 題</option>
-        <option value="10" selected>10 題</option>
-        <option value="15">15 題</option>
-        <option value="20">20 題</option>
-      </select>
-    </div>
     <button class="setting-apply" onclick="applySettings()">✅ 確認套用</button>
   </div>
 </div>
@@ -562,7 +562,7 @@ function renderHome(){
 }
 
 // ── FLASHCARD ──
-let fcGrade=null, fcMode=null;
+let fcGrade=null, fcMode=null, fcRound=10;
 let pool=[], poolIdx=0, flipped=false, currentWord=null;
 let sessionStats={again:0,hard:0,good:0,easy:0};
 let inSession=false;
@@ -580,6 +580,14 @@ function initFlashUI(){
     fcMode=this.dataset.m;
     updateStartBtn();
   });
+  document.querySelectorAll('.grade-btn[data-r]').forEach(b=>b.onclick=function(){
+    document.querySelectorAll('.grade-btn[data-r]').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');
+    fcRound=parseInt(this.dataset.r);
+  });
+  // 預設選10題
+  const def=document.querySelector('.grade-btn[data-r="10"]');
+  if(def){def.classList.add('active');}
   document.getElementById('start-btn').onclick=startSession;
   document.getElementById('session-back').onclick=()=>{if(confirm('確定結束這輪練習？'))backToMenu();};
   document.getElementById('the-card').onclick=flipCard;
@@ -625,7 +633,7 @@ function buildPool(){
   }
   if(!result.length) result=base.filter(w=>getWordState(w.id)==='new');
   if(!result.length) result=[...base];
-  return shuffle(result).slice(0,s.round);
+  return shuffle(result).slice(0,fcRound);
 }
 
 function shuffle(arr){return [...arr].sort(()=>Math.random()-.5)}
@@ -728,7 +736,10 @@ function backToMenu(){
   // reset selections
   document.querySelectorAll('.grade-btn[data-g]').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.mode-btn[data-m]').forEach(b=>b.classList.remove('active'));
-  fcGrade=null;fcMode=null;
+  document.querySelectorAll('.grade-btn[data-r]').forEach(b=>b.classList.remove('active'));
+  const def=document.querySelector('.grade-btn[data-r="10"]');
+  if(def){def.classList.add('active');}
+  fcGrade=null;fcMode=null;fcRound=10;
   updateStartBtn();
   renderHome();
 }
